@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shreyash Chonkar // Portfolio</title>
+<meta name="description" content="Shreyash Chonkar — Electronics & Computer Engineering student. Hardware, embedded systems, networking, and connected intelligent systems." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  /* ============================================================
+     THEME TOKENS
+     ============================================================ */
+  :root {
+    --accent-color: #00D9FF;
+    --accent-soft: rgba(0, 217, 255, 0.16);
+    --accent-line: rgba(0, 217, 255, 0.38);
+
+    --bg-0: #04060a;
+    --bg-1: #080d14;
+    --bg-2: #0d141d;
+    --panel: rgba(10, 18, 27, 0.66);
+    --panel-solid: #0a121b;
+
+    --text: #e8f6ff;
+    --text-dim: #8aa3b5;
+    --text-faint: #5c7284;
+
+    --danger: #ff3b6b;
+    --border: rgba(0, 217, 255, 0.22);
+    --border-soft: rgba(120, 160, 190, 0.16);
+
+    --font-display: "Orbitron", sans-serif;
+    --font-body: "Rajdhani", sans-serif;
+    --font-mono: "Share Tech Mono", monospace;
+
+    --maxw: 1180px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ============================================================
+     RESET
+     ============================================================ */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg-0);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.65;
+    letter-spacing: 0.2px;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hide the OS pointer everywhere (custom cursor takes over) */
+  body, a, button, input, textarea, [role="button"] { cursor: none !important; }
+
+  /* Text selection uses the accent color with a readable dark contrast */
+  ::selection { background: var(--accent-color); color: #04060a; }
+  ::-moz-selection { background: var(--accent-color); color: #04060a; }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  /* ============================================================
+     AMBIENT BACKGROUND (grid + scanlines + glow orbs)
+     ============================================================ */
+  .bg-grid,
+  .bg-scan,
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(0, 217, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 217, 255, 0.045) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 100%);
+  }
+
+  .bg-scan {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 0, 0, 0.28) 3px,
+      rgba(0, 0, 0, 0.28) 4px
+    );
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    animation: scanDrift 9s linear infinite;
+  }
+
+  @keyframes scanDrift {
+    from { background-position-y: 0; }
+    to { background-position-y: 80px; }
+  }
+
+  .bg-glow {
+    background:
+      radial-gradient(600px circle at 12% 8%, rgba(0, 217, 255, 0.14), transparent 62%),
+      radial-gradient(700px circle at 88% 22%, rgba(255, 59, 107, 0.10), transparent 60%),
+      radial-gradient(800px circle at 50% 100%, rgba(0, 217, 255, 0.10), transparent 65%);
+  }
+
+  /* ============================================================
+     CUSTOM CURSOR
+     ============================================================ */
+  .cursor-dot,
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    border-radius: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    will-change: transform, width, height, opacity;
+  }
+
+  .cursor-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color), 0 0 26px var(--accent-color);
+    transition: opacity 0.2s ease;
+  }
+
+  .cursor-ring {
+    width: 38px;
+    height: 38px;
+    border: 1.5px solid var(--accent-line);
+    background: transparent;
+    box-shadow: inset 0 0 14px rgba(0, 217, 255, 0.12);
+    transition: width 0.28s var(--ease), height 0.28s var(--ease),
+                background 0.28s var(--ease), border-color 0.28s var(--ease),
+                opacity 0.2s ease;
+  }
+
+  /* Morph state when hovering interactive elements */
+  body.cursor-hover .cursor-ring {
+    width: 74px;
+    height: 74px;
+    border-color: var(--accent-color);
+    background: var(--accent-soft);
+  }
+  body.cursor-hover .cursor-dot { opacity: 0; }
+
+  /* ============================================================
+     LAYOUT HELPERS
+     ============================================================ */
+  .wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  section { position: relative; z-index: 2; padding: 110px 0; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4.4vw, 2.9rem);
+    line-height: 1.1;
+    letter-spacing: 1px;
+    margin: 0 0 18px;
+  }
+
+  .glow-text {
+    color: var(--accent-color);
+    text-shadow: 0 0 14px rgba(0, 217, 255, 0.55), 0 0 34px rgba(0, 217, 255, 0.28);
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px clamp(18px, 4vw, 44px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: linear-gradient(to bottom, rgba(4, 6, 10, 0.86), rgba(4, 6, 10, 0.35));
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .nav.scrolled { border-bottom-color: var(--border); }
+
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand .dot {
+    width: 9px;
+    height: 9px;
+    background: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.75); }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 26px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .nav-links a {
+    color: var(--text-dim);
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 1px;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    transition: width 0.3s var(--ease);
+  }
+  .nav-links a:hover { color: var(--text); text-shadow: 0 0 12px var(--accent-soft); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-social {
+    display: flex;
+    gap: 14px;
+    font-size: 1rem;
+  }
+  .nav-social a {
+    color: var(--text-dim);
+    transition: color 0.25s ease, transform 0.25s ease, filter 0.25s ease;
+  }
+  .nav-social a:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 8px var(--accent-color));
+  }
+
+  .menu-btn { display: none; background: none; border: none; color: var(--text); font-size: 1.3rem; }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 120px;
+    padding-bottom: 70px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: clamp(30px, 5vw, 70px);
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.3rem, 7vw, 4.6rem);
+    line-height: 1.02;
+    letter-spacing: 1px;
+    margin: 0 0 8px;
+  }
+
+  .hero .role {
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    font-size: clamp(0.9rem, 2.2vw, 1.15rem);
+    letter-spacing: 2px;
+    margin-bottom: 22px;
+  }
+  .hero .role .cursor-blink {
+    display: inline-block;
+    width: 10px;
+    background: var(--accent-color);
+    animation: blink 1s steps(1) infinite;
+    box-shadow: 0 0 10px var(--accent-color);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero .bio {
+    color: var(--text-dim);
+    max-width: 62ch;
+    font-size: 1.06rem;
+    margin-bottom: 32px;
+  }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 26px;
+    border: 1px solid var(--accent-line);
+    color: var(--accent-color);
+    background: rgba(0, 217, 255, 0.05);
+    overflow: hidden;
+    transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent-color);
+    transform: translateY(101%);
+    transition: transform 0.34s var(--ease);
+    z-index: -1;
+  }
+  .btn:hover {
+    color: #04060a;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 22px rgba(0, 217, 255, 0.5);
+    transform: translateY(-3px);
+  }
+  .btn:hover::before { transform: translateY(0); }
+  .btn.ghost {
+    color: var(--text);
+    border-color: var(--border-soft);
+    background: transparent;
+  }
+  .btn.ghost:hover { color: #04060a; border-color: var(--accent-color); }
+
+  /* Portrait */
+  .portrait-wrap {
+    position: relative;
+    justify-self: center;
+    width: min(320px, 78vw);
+    aspect-ratio: 1;
+  }
+  .portrait-frame {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--accent-line);
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.22), inset 0 0 40px rgba(0, 217, 255, 0.08);
+    clip-path: polygon(0 0, 100% 0, 100% 84%, 84% 100%, 0 100%);
+    overflow: hidden;
+    background: var(--panel-solid);
+  }
+  .portrait-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.05) contrast(1.05);
+  }
+  .portrait-corner {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
+  }
+  .portrait-corner.tl { top: -12px; left: -12px; border-right: none; border-bottom: none; }
+  .portrait-corner.br { bottom: -12px; right: -12px; border-left: none; border-top: none; }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin-top: 56px;
+    border: 1px solid var(--border-soft);
+    background: var(--border-soft);
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  }
+  .stat {
+    background: var(--panel-solid);
+    padding: 22px 20px;
+    text-align: left;
+  }
+  .stat .num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+    color: var(--accent-color);
+    text-shadow: 0 0 16px rgba(0, 217, 255, 0.4);
+    line-height: 1;
+  }
+  .stat .label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 8px;
+  }
+
+  /* ============================================================
+     ABOUT
+     ============================================================ */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(30px, 5vw, 64px);
+    align-items: start;
+  }
+  .about-copy p { color: var(--text-dim); margin: 0 0 18px; }
+  .about-copy p:last-child { margin-bottom: 0; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    color: var(--text-dim);
+    border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+    transition: color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .tag:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-line);
+    box-shadow: 0 0 14px rgba(0, 217, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* ============================================================
+     PROJECTS
+     ============================================================ */
+  .projects-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 40px;
+  }
+  .projects-note {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    letter-spacing: 1px;
+  }
+
+  .repo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+  }
+
+  .repo-card {
+    position: relative;
+    padding: 26px 24px;
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-soft);
+    clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+    transform-style: preserve-3d;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+  .repo-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(0, 217, 255, 0.14) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--ease);
+    pointer-events: none;
+  }
+  .repo-card:hover { border-color: var(--accent-line); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 217, 255, 0.14); }
+  .repo-card:hover::after { transform: translateX(120%); }
+
+  .repo-card .rc-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    transform: translateZ(28px);
+  }
+  .repo-card .rc-icon { color: var(--accent-color); font-size: 1.15rem; filter: drop-shadow(0 0 8px var(--accent-soft)); }
+  .repo-card .rc-stars {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .repo-card .rc-stars i { color: #ffd166; }
+
+  .repo-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px;
+    transform: translateZ(22px);
+    word-break: break-word;
+  }
+  .repo-card p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin: 0 0 20px;
+    min-height: 44px;
+    transform: translateZ(14px);
+  }
+  .repo-card .rc-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    transform: translateZ(18px);
+  }
+  .repo-card .rc-bottom .lang::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 7px;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    vertical-align: middle;
+  }
+
+  .repo-skeleton {
+    height: 190px;
+    border: 1px solid var(--border-soft);
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,217,255,0.07), rgba(255,255,255,0.02));
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  .repo-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    border: 1px dashed var(--border-soft);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+
+  /* ============================================================
+     CONTACT / FOOTER
+     ============================================================ */
+  .contact { text-align: center; }
+  .contact .section-title { margin-bottom: 22px; }
+  .contact p { color: var(--text-dim); max-width: 54ch; margin: 0 auto 34px; }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 34px 0 46px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .footer .f-links {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 18px;
+    font-size: 1.05rem;
+  }
+  .footer .f-links a { color: var(--text-dim); transition: color 0.25s ease, filter 0.25s ease; }
+  .footer .f-links a:hover { color: var(--accent-color); filter: drop-shadow(0 0 8px var(--accent-color)); }
+  .footer small {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 1px;
+    color: var(--text-faint);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .portrait-wrap { order: -1; margin-bottom: 10px; }
+    .about-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16.5px; }
+    section { padding: 78px 0; }
+    .nav-links { display: none; }
+    .menu-btn { display: block; }
+    .nav-social { gap: 16px; }
+    .repo-card p { min-height: 0; }
+  }
+
+  /* Respect reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .bg-scan { animation: none; }
+    * { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Ambient layers -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Custom cursor -->
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav" id="nav">
+    <a class="brand" href="#top" data-cursor>
+      <span class="dot"></span> SHREYASH<span class="glow-text">.C</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about" data-cursor>About</a></li>
+      <li><a href="#projects" data-cursor>Projects</a></li>
+      <li><a href="#contact" data-cursor>Contact</a></li>
+    </ul>
+    <div class="nav-social">
+      <a href="https://github.com/shreyash9-bot" target="_blank" rel="noopener" aria-label="GitHub" data-cursor><i class="fa-brands fa-github"></i></a>
+      <a href="https://www.linkedin.com/in/shreyashchonkar/" target="_blank" rel="noopener" aria-label="LinkedIn" data-cursor><i class="fa-brands fa-linkedin-in"></i></a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" data-cursor><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <span class="eyebrow" data-hero>Electronics &amp; Computer Engineering</span>
+          <h1 data-hero>SHREYASH<br />CHONKAR<span class="glow-text">.</span></h1>
+          <p class="role" data-hero><span id="typedRole"></span><span class="cursor-blink">&nbsp;</span></p>
+          <p class="bio" data-hero>
+            I'm an Electronics and Computer Engineering student with a strong interest in hardware,
+            embedded systems, networking, and emerging technologies. I enjoy building practical projects
+            that combine electronics and software to solve real-world problems — and exploring how
+            intelligent, connected systems can be designed and built.
+          </p>
+          <div class="cta-row" data-hero>
+            <a class="btn" href="#projects" data-cursor><i class="fa-solid fa-diagram-project"></i> View Projects</a>
+            <a class="btn ghost" href="https://github.com/shreyash9-bot" target="_blank" rel="noopener" data-cursor><i class="fa-brands fa-github"></i> GitHub</a>
+            <a class="btn ghost" href="https://www.linkedin.com/in/shreyashchonkar/" target="_blank" rel="noopener" data-cursor><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a>
+          </div>
+        </div>
+
+        <div class="portrait-wrap" data-hero>
+          <span class="portrait-corner tl" aria-hidden="true"></span>
+          <span class="portrait-corner br" aria-hidden="true"></span>
+          <div class="portrait-frame">
+            <img id="avatar" src="" alt="Shreyash Chonkar" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Live GitHub stats -->
+      <div class="stats" data-hero>
+        <div class="stat"><div class="num" id="statRepos">--</div><div class="label">Public Repos</div></div>
+        <div class="stat"><div class="num" id="statFollowers">--</div><div class="label">Followers</div></div>
+        <div class="stat"><div class="num" id="statFollowing">--</div><div class="label">Following</div></div>
+        <div class="stat"><div class="num" id="statStars">--</div><div class="label">Total Stars</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section id="about">
+    <div class="wrap">
+      <div class="about-grid">
+        <div>
+          <span class="eyebrow">About</span>
+          <h2 class="section-title">Hardware meets<br /><span class="glow-text">software.</span></h2>
+        </div>
+        <div class="about-copy">
+          <p>
+            My work sits at the intersection of the physical and the digital. From embedded systems and
+            circuit-level thinking to networking and connected architectures, I like understanding how a
+            system works end to end — then building it.
+          </p>
+          <p>
+            I'm especially drawn to hands-on engineering: prototyping, wiring things up, and writing the
+            firmware and software that bring them to life. The projects below are pulled live from my
+            GitHub, so what you see is always current.
+          </p>
+          <div class="tags">
+            <span class="tag">Embedded Systems</span>
+            <span class="tag">Electronics</span>
+            <span class="tag">Networking</span>
+            <span class="tag">IoT</span>
+            <span class="tag">Emerging Tech</span>
+            <span class="tag">C / C++</span>
+            <span class="tag">Python</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS ===================== -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="projects-head">
+        <div>
+          <span class="eyebrow">Projects</span>
+          <h2 class="section-title">Selected <span class="glow-text">builds.</span></h2>
+        </div>
+        <div class="projects-note">// live from github.com/<span id="ghUserLabel">shreyash9-bot</span></div>
+      </div>
+      <div class="repo-grid" id="repoGrid">
+        <div class="repo-skeleton"></div>
+        <div class="repo-skeleton"></div>
+        <div class="repo-skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <span class="eyebrow" style="justify-content:center;">Contact</span>
+      <h2 class="section-title">Let's <span class="glow-text">connect.</span></h2>
+      <p>
+        Open to collaborations, internships, and interesting engineering problems. The fastest way to
+        reach me is on LinkedIn or GitHub.
+      </p>
+      <div class="contact-links">
+        <a class="btn" href="https://www.linkedin.com/in/shreyashchonkar/" target="_blank" rel="noopener" data-cursor><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/shreyash9-bot" target="_blank" rel="noopener" data-cursor><i class="fa-brands fa-github"></i> GitHub</a>
+        <a class="btn ghost" href="mailto:shreyashchonkar9@gmail.com" data-cursor><i class="fa-solid fa-envelope"></i> Email</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="f-links">
+        <a href="https://github.com/shreyash9-bot" target="_blank" rel="noopener" aria-label="GitHub" data-cursor><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/shreyashchonkar/" target="_blank" rel="noopener" aria-label="LinkedIn" data-cursor><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="mailto:shreyashchonkar9@gmail.com" aria-label="Email" data-cursor><i class="fa-solid fa-envelope"></i></a>
+      </div>
+      <small>© <span id="year"></span> SHREYASH CHONKAR — BUILT FROM SCRATCH</small>
+    </div>
+  </footer>
+
+  <script>
+  /* ============================================================
+     CONFIG
+     ============================================================ */
+  const GITHUB_USERNAME = "shreyash9-bot";
+
+  /* ============================================================
+     1. CUSTOM CURSOR
+     ============================================================ */
+  (function customCursor() {
+    const dot = document.getElementById("cursorDot");
+    const ring = document.getElementById("cursorRing");
+    if (!dot || !ring) return;
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX, ringY = mouseY;
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+    });
+
+    // Smooth trailing ring
+    function renderRing() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+      requestAnimationFrame(renderRing);
+    }
+    renderRing();
+
+    // Morph on interactive elements
+    const hoverTargets = "a, button, [data-cursor], .repo-card, .tag";
+    document.querySelectorAll(hoverTargets).forEach((el) => {
+      el.addEventListener("mouseenter", () => document.body.classList.add("cursor-hover"));
+      el.addEventListener("mouseleave", () => document.body.classList.remove("cursor-hover"));
+    });
+
+    // Hide when leaving the window
+    document.addEventListener("mouseleave", () => {
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+    });
+    document.addEventListener("mouseenter", () => {
+      dot.style.opacity = "1";
+      ring.style.opacity = "1";
+    });
+  })();
+
+  /* ============================================================
+     2. NAV STATE + MOBILE MENU
+     ============================================================ */
+  (function navBehaviour() {
+    const nav = document.getElementById("nav");
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("scrolled", window.scrollY > 30);
+    });
+
+    const menuBtn = document.getElementById("menuBtn");
+    const links = document.querySelector(".nav-links");
+    menuBtn && menuBtn.addEventListener("click", () => {
+      const open = links.style.display === "flex";
+      links.style.display = open ? "none" : "flex";
+      links.style.position = "absolute";
+      links.style.top = "100%";
+      links.style.left = "0";
+      links.style.right = "0";
+      links.style.flexDirection = "column";
+      links.style.gap = "14px";
+      links.style.padding = "20px 24px";
+      links.style.background = "rgba(8,13,20,0.97)";
+      links.style.borderBottom = "1px solid var(--border)";
+    });
+  })();
+
+  /* ============================================================
+     3. GITHUB API — profile + top repos by stars
+     ============================================================ */
+  const REPO_GRID = document.getElementById("repoGrid");
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function renderSkeletons(n = 3) {
+    REPO_GRID.innerHTML = Array.from({ length: n })
+      .map(() => '<div class="repo-skeleton"></div>')
+      .join("");
+  }
+
+  function showEmpty(msg) {
+    REPO_GRID.innerHTML = `<div class="repo-empty">${escapeHtml(msg)}</div>`;
+  }
+
+  function renderStats(profile) {
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) animateCount(el, Number(val) || 0);
+    };
+    set("statRepos", profile.public_repos);
+    set("statFollowers", profile.followers);
+    set("statFollowing", profile.following);
+
+    const avatar = document.getElementById("avatar");
+    if (avatar && profile.avatar_url) avatar.src = profile.avatar_url;
+
+    const label = document.getElementById("ghUserLabel");
+    if (label) label.textContent = profile.login || GITHUB_USERNAME;
+  }
+
+  function animateCount(el, target) {
+    const dur = 1100;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toLocaleString();
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function renderRepos(repos) {
+    if (!repos.length) {
+      showEmpty("No public repositories yet — check back soon.");
+      return;
+    }
+
+    const sorted = [...repos]
+      .sort((a, b) => (b.stargazers_count - a.stargazers_count) ||
+                      (new Date(b.updated_at) - new Date(a.updated_at)))
+      .slice(0, 6);
+
+    REPO_GRID.innerHTML = sorted.map((r) => {
+      const desc = r.description ? escapeHtml(r.description) : "No description provided.";
+      const lang = r.language ? `<span class="lang">${escapeHtml(r.language)}</span>` : "";
+      const forks = `<span class="rc-forks"><i class="fa-solid fa-code-fork"></i> ${r.forks_count}</span>`;
+      return `
+        <a class="repo-card" href="${escapeHtml(r.html_url)}" target="_blank" rel="noopener" data-cursor>
+          <div class="rc-top">
+            <span class="rc-icon"><i class="fa-solid fa-microchip"></i></span>
+            <span class="rc-stars"><i class="fa-solid fa-star"></i> ${r.stargazers_count}</span>
+          </div>
+          <h3>${escapeHtml(r.name)}</h3>
+          <p>${desc}</p>
+          <div class="rc-bottom">
+            ${lang}
+            ${forks}
+            <span class="rc-updated"><i class="fa-regular fa-clock"></i> ${new Date(r.updated_at).toLocaleDateString()}</span>
+          </div>
+        </a>`;
+    }).join("");
+
+    // Wire up hover morph for freshly-rendered cards
+    document.querySelectorAll(".repo-card").forEach((el) => {
+      el.addEventListener("mouseenter", () => document.body.classList.add("cursor-hover"));
+      el.addEventListener("mouseleave", () => document.body.classList.remove("cursor-hover"));
+    });
+
+    initTilt();
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  }
+
+  async function fetchGitHub() {
+    renderSkeletons();
+    try {
+      const [profileRes, reposRes] = await Promise.all([
+        fetch(`https://api.github.com/users/${GITHUB_USERNAME}`),
+        fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`)
+      ]);
+
+      if (!profileRes.ok) throw new Error("Profile request failed");
+      if (!reposRes.ok) throw new Error("Repos request failed");
+
+      const profile = await profileRes.json();
+      const repos = await reposRes.json();
+
+      renderStats(profile);
+
+      const totalStars = Array.isArray(repos)
+        ? repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0)
+        : 0;
+      const starsEl = document.getElementById("statStars");
+      if (starsEl) animateCount(starsEl, totalStars);
+
+      renderRepos(Array.isArray(repos) ? repos : []);
+    } catch (err) {
+      console.error("GitHub fetch error:", err);
+      showEmpty("Couldn't load GitHub projects right now (API rate limit or offline). Visit the profile directly.");
+    }
+  }
+
+  /* ============================================================
+     4. 3D HOVER TILT ON PROJECT CARDS
+     ============================================================ */
+  function initTilt() {
+    const cards = document.querySelectorAll(".repo-card");
+    const maxTilt = 10;
+
+    cards.forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rx = (0.5 - py) * maxTilt * 2;
+        const ry = (px - 0.5) * maxTilt * 2;
+        card.style.transform =
+          `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px) scale(1.015)`;
+      });
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = "perspective(900px) rotateX(0) rotateY(0) translateY(0) scale(1)";
+      });
+    });
+  }
+
+  /* ============================================================
+     5. TYPED ROLE TEXT
+     ============================================================ */
+  (function typeRole() {
+    const el = document.getElementById("typedRole");
+    if (!el) return;
+    const roles = [
+      "Embedded Systems Enthusiast",
+      "Electronics & Computer Engineer",
+      "IoT & Networking Explorer",
+      "Hardware + Software Builder"
+    ];
+    let roleIdx = 0, charIdx = 0, deleting = false;
+
+    function step() {
+      const current = roles[roleIdx];
+      charIdx += deleting ? -1 : 1;
+      el.textContent = current.slice(0, charIdx);
+
+      let delay = deleting ? 45 : 85;
+      if (!deleting && charIdx === current.length) { delay = 1600; deleting = true; }
+      else if (deleting && charIdx === 0) { deleting = false; roleIdx = (roleIdx + 1) % roles.length; delay = 320; }
+
+      setTimeout(step, delay);
+    }
+    step();
+  })();
+
+  /* ============================================================
+     6. GSAP — HERO ENTRANCE + SCROLL REVEALS
+     ============================================================ */
+  function initAnimations() {
+    if (!window.gsap) {
+      // Graceful fallback: just show everything
+      document.querySelectorAll("[data-hero], section, .repo-card").forEach((el) => {
+        el.style.opacity = 1;
+      });
+      return;
+    }
+
+    gsap.registerPlugin(window.ScrollTrigger);
+
+    // Hero entrance timeline
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.from(".nav", { y: -60, opacity: 0, duration: 0.8 })
+      .from("[data-hero]", { y: 46, opacity: 0, duration: 0.9, stagger: 0.14 }, "-=0.4")
+      .from(".portrait-wrap", { scale: 0.9, opacity: 0, duration: 1.0 }, "-=1.0")
+      .from(".portrait-corner", { scale: 0, opacity: 0, duration: 0.5, stagger: 0.12 }, "-=0.5")
+      .from(".stat", { y: 30, opacity: 0, duration: 0.6, stagger: 0.1 }, "-=0.5");
+
+    // Section headers
+    gsap.utils.toArray(".section-title, .eyebrow").forEach((el) => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: "top 88%" },
+        y: 34, opacity: 0, duration: 0.8, ease: "power3.out"
+      });
+    });
+
+    // About copy + tags
+    gsap.from(".about-copy p", {
+      scrollTrigger: { trigger: ".about-copy", start: "top 85%" },
+      y: 30, opacity: 0, duration: 0.7, stagger: 0.15
+    });
+    gsap.from(".tag", {
+      scrollTrigger: { trigger: ".tags", start: "top 90%" },
+      scale: 0.8, opacity: 0, duration: 0.45, stagger: 0.05, ease: "back.out(1.6)"
+    });
+
+    // Contact + footer
+    gsap.from(".contact .btn", {
+      scrollTrigger: { trigger: ".contact-links", start: "top 90%" },
+      y: 24, opacity: 0, duration: 0.6, stagger: 0.1
+    });
+
+    // Project cards (added later via renderRepos) — observe dynamically
+    observeRepoCards();
+  }
+
+  function observeRepoCards() {
+    const grid = document.getElementById("repoGrid");
+    if (!grid) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const cards = Array.from(grid.querySelectorAll(".repo-card"));
+        const idx = cards.indexOf(entry.target);
+        entry.target.animate(
+          [
+            { opacity: 0, transform: "translateY(38px) scale(0.97)" },
+            { opacity: 1, transform: "translateY(0) scale(1)" }
+          ],
+          { duration: 620, delay: (idx % 6) * 70, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "both" }
+        );
+        entry.target.style.opacity = 1;
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.15 });
+
+    // Observe current + future cards
+    const attach = () => grid.querySelectorAll(".repo-card").forEach((c) => {
+      c.style.opacity = 0;
+      io.observe(c);
+    });
+    attach();
+
+    // Watch for cards injected by the GitHub fetch
+    const mo = new MutationObserver(() => attach());
+    mo.observe(grid, { childList: true });
+  }
+
+  /* ============================================================
+     BOOT
+     ============================================================ */
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("year").textContent = new Date().getFullYear();
+    initAnimations();
+    fetchGitHub();
+  });
+  </script>
+</body>
+</html>
